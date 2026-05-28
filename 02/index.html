@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsible Finance Recommendation Builder</title>
+  <style>
+    :root {
+      --asu-maroon: #8c1d40;
+      --asu-gold: #ffc627;
+      --asu-black: #191919;
+      --asu-blue: #00a3e0;
+      --asu-green: #78be20;
+      --ink: #1f2933;
+      --muted: #52606d;
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --line: #d8dee6;
+      --focus: #005ea8;
+      --soft-blue: #eef9fd;
+      --soft-green: #edf8e8;
+      --soft-gold: #fff8df;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -44px;
+      z-index: 10;
+      background: var(--asu-gold);
+      color: var(--asu-black);
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .skip-link:focus { top: 12px; outline: 3px solid white; }
+    header {
+      background: var(--asu-maroon);
+      color: white;
+      padding: 30px clamp(18px, 4vw, 56px);
+      border-bottom: 8px solid var(--asu-gold);
+    }
+    header p { max-width: 920px; margin: 8px 0 0; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; }
+    h2 { color: var(--asu-maroon); margin: 0 0 10px; line-height: 1.2; }
+    h3 { margin-bottom: 8px; color: var(--asu-black); }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px clamp(14px, 3vw, 32px) 48px;
+    }
+    .panel, .results, .takeaway {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 18px 0;
+    }
+    .scenario {
+      border-left: 7px solid var(--asu-blue);
+      background: var(--soft-blue);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+    label, legend { font-weight: 700; }
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+    output {
+      display: inline-block;
+      min-width: 2ch;
+      color: var(--asu-maroon);
+      font-weight: 700;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--asu-maroon);
+      margin: 12px 0;
+    }
+    select, button, input[type="radio"] { font: inherit; }
+    select {
+      width: 100%;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: white;
+      color: var(--ink);
+      margin-top: 6px;
+    }
+    .slider-card, .choice {
+      display: block;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 10px 0;
+      background: white;
+    }
+    button {
+      background: var(--asu-maroon);
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 6px 8px 6px 0;
+    }
+    button.secondary { background: #44515f; }
+    button:hover { filter: brightness(.95); }
+    button:focus, select:focus, input:focus {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+    .meter {
+      height: 18px;
+      background: #eef2f6;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .meter span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--asu-gold);
+    }
+    .feedback {
+      border-left: 7px solid var(--asu-gold);
+      background: var(--soft-gold);
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .feedback.good {
+      background: var(--soft-green);
+      border-left-color: var(--asu-green);
+    }
+    .score {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--asu-maroon);
+    }
+    .error {
+      border: 2px solid #b00020;
+      background: #fff3f3;
+      color: #3b0a0a;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+    }
+    @media print {
+      .skip-link, header, form, .controls { display: none; }
+      body { background: white; }
+      main { max-width: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header>
+    <h1>Responsible Finance Recommendation Builder</h1>
+    <p>Create a finance recommendation by setting priorities, choosing a funding approach, and selecting evidence that would help leaders monitor the decision after launch.</p>
+  </header>
+  <main id="main">
+    <section class="panel scenario" aria-labelledby="scenario-heading">
+      <h2 id="scenario-heading">Business Situation</h2>
+      <p>A company can expand a student-focused service into a new city. The expansion could create long-term value, but it requires money now, creates uncertainty, and may affect employees, customers, and community partners.</p>
+      <p>Your task is to build a recommendation that does more than chase the largest possible return. A strong finance recommendation explains the tradeoff, protects liquidity, and names evidence leaders should watch.</p>
+    </section>
+
+    <form id="activity-form" novalidate>
+      <section class="panel" aria-labelledby="priorities-heading">
+        <h2 id="priorities-heading">Set Recommendation Priorities</h2>
+        <p>Use the sliders to create a priority profile from 1 to 5. A defensible recommendation should not maximize every priority at once. It should show judgment about tradeoffs.</p>
+        <div class="grid">
+          <div class="slider-card">
+            <label for="return">Financial Return: <output id="return-out">3</output></label>
+            <input id="return" name="return" type="range" min="1" max="5" value="3">
+            <p>How strongly should the recommendation emphasize expected profit or cash flow?</p>
+          </div>
+          <div class="slider-card">
+            <label for="liquidity">Liquidity Cushion: <output id="liquidity-out">3</output></label>
+            <input id="liquidity" name="liquidity" type="range" min="1" max="5" value="3">
+            <p>How strongly should the company protect cash if the launch performs poorly?</p>
+          </div>
+          <div class="slider-card">
+            <label for="stakeholders">Stakeholder Protection: <output id="stakeholders-out">4</output></label>
+            <input id="stakeholders" name="stakeholders" type="range" min="1" max="5" value="4">
+            <p>How strongly should the recommendation protect employees, customers, and community partners?</p>
+          </div>
+          <div class="slider-card">
+            <label for="speed">Growth Speed: <output id="speed-out">3</output></label>
+            <input id="speed" name="speed" type="range" min="1" max="5" value="3">
+            <p>How aggressively should the company scale the expansion?</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="choices-heading">
+        <h2 id="choices-heading">Build the Recommendation</h2>
+        <div class="grid">
+          <div>
+            <label for="funding">Choose the funding approach</label>
+            <select id="funding" name="funding" required>
+              <option value="">Select one</option>
+              <option value="balanced">Use retained earnings plus modest debt, with spending released by milestone.</option>
+              <option value="debt">Use maximum debt so the company can expand as quickly as possible.</option>
+              <option value="equity">Sell ownership quickly because outside money removes most risk.</option>
+              <option value="cash">Use all available cash because borrowing should always be avoided.</option>
+            </select>
+          </div>
+          <div>
+            <label for="evidence">Choose the evidence dashboard</label>
+            <select id="evidence" name="evidence" required>
+              <option value="">Select one</option>
+              <option value="balanced">Cash burn, customer retention, employee workload, complaint rate, and break-even progress.</option>
+              <option value="revenue">Revenue growth only, because all other concerns distract from financial performance.</option>
+              <option value="sentiment">Customer sentiment only, because reputation matters more than cash.</option>
+              <option value="speed">Number of new customers acquired each week, regardless of cost.</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="boundary-heading">
+        <h2 id="boundary-heading">Choose the Responsibility Boundary</h2>
+        <fieldset>
+          <legend>Which boundary should trigger leaders to pause or revise the plan?</legend>
+          <label class="choice"><input type="radio" name="boundary" value="balanced" required> Pause if cash burn exceeds the milestone plan, service complaints rise, or employee workload becomes unsustainable.</label>
+          <label class="choice"><input type="radio" name="boundary" value="profit"> Continue as long as total revenue rises, even if service complaints and workload also rise.</label>
+          <label class="choice"><input type="radio" name="boundary" value="comfort"> Pause only if leaders feel uncomfortable with public reaction.</label>
+          <label class="choice"><input type="radio" name="boundary" value="never"> Never pause once money has been committed because stopping would waste the original investment.</label>
+        </fieldset>
+      </section>
+
+      <div id="form-error" class="error" role="alert" tabindex="-1" hidden></div>
+      <div class="controls">
+        <button type="submit">Generate Finance Recommendation</button>
+        <button type="button" class="secondary" id="reset-btn">Reset</button>
+      </div>
+    </form>
+
+    <section id="results" class="results" aria-live="polite" hidden>
+      <h2>Results and Feedback</h2>
+      <p class="score" id="score-line"></p>
+      <div id="profile"></div>
+      <div id="feedback-list"></div>
+    </section>
+
+    <section id="takeaway" class="takeaway" hidden>
+      <h2>Take-Away Recommendation</h2>
+      <div id="takeaway-content"></div>
+      <div class="controls">
+        <button type="button" id="download-btn">Download Take-Away</button>
+        <button type="button" class="secondary" onclick="window.print()">Print Take-Away</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let scormAPI = null;
+    function findAPI(win) {
+      let attempts = 0;
+      while (win && attempts < 7) {
+        if (win.API) return win.API;
+        win = win.parent;
+        attempts += 1;
+      }
+      return null;
+    }
+    function scormInit() {
+      scormAPI = findAPI(window) || (window.opener ? findAPI(window.opener) : null);
+      if (scormAPI) {
+        scormAPI.LMSInitialize("");
+        scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        scormAPI.LMSCommit("");
+      }
+    }
+    function scormComplete(score) {
+      if (!scormAPI) return;
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(score));
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", "100");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+      scormAPI.LMSCommit("");
+    }
+    window.addEventListener("load", scormInit);
+    window.addEventListener("beforeunload", () => { if (scormAPI) scormAPI.LMSFinish(""); });
+
+    const form = document.getElementById("activity-form");
+    const errorBox = document.getElementById("form-error");
+    const results = document.getElementById("results");
+    const takeaway = document.getElementById("takeaway");
+    const scoreLine = document.getElementById("score-line");
+    const feedbackList = document.getElementById("feedback-list");
+    const profile = document.getElementById("profile");
+    const takeawayContent = document.getElementById("takeaway-content");
+    const sliders = ["return", "liquidity", "stakeholders", "speed"];
+
+    sliders.forEach(id => {
+      const input = document.getElementById(id);
+      const output = document.getElementById(`${id}-out`);
+      input.addEventListener("input", () => { output.textContent = input.value; });
+    });
+
+    function selectedRadio(name) {
+      return form.querySelector(`input[name="${name}"]:checked`);
+    }
+
+    function requireComplete() {
+      const missing = [];
+      if (!form.elements.funding.value) missing.push("funding approach");
+      if (!form.elements.evidence.value) missing.push("evidence dashboard");
+      if (!selectedRadio("boundary")) missing.push("responsibility boundary");
+      return missing;
+    }
+
+    function sliderValues() {
+      const values = {};
+      sliders.forEach(id => { values[id] = Number(document.getElementById(id).value); });
+      return values;
+    }
+
+    function priorityScore(values) {
+      let score = 0;
+      if (values.return >= 3 && values.return <= 4) score += 10;
+      if (values.liquidity >= 3) score += 10;
+      if (values.stakeholders >= 4) score += 10;
+      if (values.speed >= 2 && values.speed <= 4) score += 10;
+      return score;
+    }
+
+    function addFeedback(title, isCorrect, message) {
+      const div = document.createElement("div");
+      div.className = `feedback ${isCorrect ? "good" : ""}`;
+      div.innerHTML = `<h3>${title}</h3><p><strong>${isCorrect ? "Strong recommendation." : "Revise this part."}</strong> ${message}</p>`;
+      feedbackList.appendChild(div);
+    }
+
+    function meter(label, value) {
+      return `<div><strong>${label}: ${value} out of 5</strong><div class="meter" aria-hidden="true"><span style="width:${value * 20}%"></span></div></div>`;
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const missing = requireComplete();
+      if (missing.length) {
+        errorBox.hidden = false;
+        errorBox.textContent = `Please complete: ${missing.join(", ")}.`;
+        errorBox.focus();
+        return;
+      }
+      errorBox.hidden = true;
+      feedbackList.innerHTML = "";
+
+      const values = sliderValues();
+      const priorities = priorityScore(values);
+      const fundingCorrect = form.elements.funding.value === "balanced";
+      const evidenceCorrect = form.elements.evidence.value === "balanced";
+      const boundaryCorrect = selectedRadio("boundary").value === "balanced";
+      const score = priorities + (fundingCorrect ? 20 : 0) + (evidenceCorrect ? 20 : 0) + (boundaryCorrect ? 20 : 0);
+
+      scoreLine.textContent = `Score reported to Canvas: ${score} out of 100`;
+      profile.innerHTML = `
+        <h3>Your Priority Profile</h3>
+        ${meter("Financial Return", values.return)}
+        ${meter("Liquidity Cushion", values.liquidity)}
+        ${meter("Stakeholder Protection", values.stakeholders)}
+        ${meter("Growth Speed", values.speed)}
+      `;
+      addFeedback("Priority Design", priorities >= 30, "A responsible finance profile balances expected return with liquidity and stakeholder protection. It also avoids assuming fastest growth is always best.");
+      addFeedback("Funding Approach", fundingCorrect, "A milestone-based blend of retained earnings and modest debt protects liquidity while still allowing the company to test the opportunity.");
+      addFeedback("Evidence Dashboard", evidenceCorrect, "A useful dashboard tracks financial performance and stakeholder consequences together: cash burn, retention, workload, complaints, and break-even progress.");
+      addFeedback("Responsibility Boundary", boundaryCorrect, "A pause rule turns responsibility into a decision system, not a vague value statement. Leaders know what evidence would trigger revision.");
+
+      takeawayContent.innerHTML = `
+        <p><strong>Recommendation:</strong> Expand through a milestone-based launch funded by retained earnings plus modest debt.</p>
+        <p><strong>Priority profile:</strong> Financial return ${values.return}/5, liquidity cushion ${values.liquidity}/5, stakeholder protection ${values.stakeholders}/5, and growth speed ${values.speed}/5.</p>
+        <p><strong>Evidence to monitor:</strong> Cash burn, customer retention, employee workload, complaint rate, and break-even progress.</p>
+        <p><strong>Pause rule:</strong> Revise the plan if cash burn exceeds the milestone plan, service complaints rise, or employee workload becomes unsustainable.</p>
+      `;
+      results.hidden = false;
+      takeaway.hidden = false;
+      scormComplete(score);
+      results.scrollIntoView({ block: "start" });
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      form.reset();
+      sliders.forEach(id => { document.getElementById(`${id}-out`).textContent = document.getElementById(id).value; });
+      errorBox.hidden = true;
+      results.hidden = true;
+      takeaway.hidden = true;
+      feedbackList.innerHTML = "";
+      profile.innerHTML = "";
+      scoreLine.textContent = "";
+    });
+
+    document.getElementById("download-btn").addEventListener("click", () => {
+      const text = takeawayContent.innerText;
+      const blob = new Blob([`Responsible Finance Recommendation Take-Away\n\n${text}\n`], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "responsible-finance-recommendation-takeaway.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
