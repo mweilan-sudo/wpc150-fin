@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finance Risk and Stakeholder Map</title>
+  <style>
+    :root {
+      --asu-maroon: #8c1d40;
+      --asu-gold: #ffc627;
+      --asu-black: #191919;
+      --asu-blue: #00a3e0;
+      --asu-green: #78be20;
+      --ink: #1f2933;
+      --muted: #52606d;
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --line: #d8dee6;
+      --focus: #005ea8;
+      --soft-blue: #eef9fd;
+      --soft-green: #edf8e8;
+      --soft-gold: #fff8df;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -44px;
+      z-index: 10;
+      background: var(--asu-gold);
+      color: var(--asu-black);
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .skip-link:focus { top: 12px; outline: 3px solid white; }
+    header {
+      background: var(--asu-maroon);
+      color: white;
+      padding: 30px clamp(18px, 4vw, 56px);
+      border-bottom: 8px solid var(--asu-gold);
+    }
+    header p { max-width: 920px; margin: 8px 0 0; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; }
+    h2 { color: var(--asu-maroon); margin: 0 0 10px; line-height: 1.2; }
+    h3 { margin-bottom: 8px; color: var(--asu-black); }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px clamp(14px, 3vw, 32px) 48px;
+    }
+    .panel, .results, .takeaway {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 18px 0;
+    }
+    .scenario {
+      border-left: 7px solid var(--asu-blue);
+      background: var(--soft-blue);
+    }
+    label, legend { font-weight: 700; }
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+    select, button, input[type="checkbox"], input[type="radio"] { font: inherit; }
+    select {
+      width: 100%;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: white;
+      color: var(--ink);
+      margin-top: 6px;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .map-item, .choice {
+      display: block;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 10px 0;
+      background: white;
+    }
+    button {
+      background: var(--asu-maroon);
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 6px 8px 6px 0;
+    }
+    button.secondary { background: #44515f; }
+    button:hover { filter: brightness(.95); }
+    button:focus, select:focus, input:focus {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--asu-maroon); color: white; }
+    caption {
+      text-align: left;
+      font-weight: 700;
+      color: var(--asu-maroon);
+      margin-bottom: 6px;
+    }
+    .feedback {
+      border-left: 7px solid var(--asu-gold);
+      background: var(--soft-gold);
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .feedback.good {
+      background: var(--soft-green);
+      border-left-color: var(--asu-green);
+    }
+    .score {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--asu-maroon);
+    }
+    .error {
+      border: 2px solid #b00020;
+      background: #fff3f3;
+      color: #3b0a0a;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+    }
+    @media (max-width: 680px) {
+      th, td { display: block; width: 100%; }
+      tr { border: 1px solid var(--line); display: block; margin-bottom: 12px; }
+      th { border-bottom: 0; }
+    }
+    @media print {
+      .skip-link, header, form, .controls { display: none; }
+      body { background: white; }
+      main { max-width: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header>
+    <h1>Finance Risk and Stakeholder Map</h1>
+    <p>Map financial risks to the stakeholders who carry them, then evaluate which safeguard makes the decision more responsible.</p>
+  </header>
+  <main id="main">
+    <section class="panel scenario" aria-labelledby="scenario-heading">
+      <h2 id="scenario-heading">Business Situation</h2>
+      <p>A company is considering a new credit-based subscription plan. It could increase revenue and customer access, but the plan depends on customers paying on time, the platform working reliably, and public trust staying strong.</p>
+      <p>Your job is to analyze the decision through Finance: classify the risks, identify who carries the downside, and choose safeguards before the company launches.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="evidence-heading">
+      <h2 id="evidence-heading">Risk Evidence</h2>
+      <div role="region" aria-labelledby="risk-table-caption" tabindex="0">
+        <table>
+          <caption id="risk-table-caption">Signals leaders have noticed during planning</caption>
+          <thead>
+            <tr>
+              <th scope="col">Signal</th>
+              <th scope="col">Why It Matters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Late payments are higher among new customers.</th>
+              <td>The company may not collect all expected cash.</td>
+            </tr>
+            <tr>
+              <th scope="row">The mobile payment system has had outages.</th>
+              <td>Customers could lose service access or be billed incorrectly.</td>
+            </tr>
+            <tr>
+              <th scope="row">Student customers like the plan but worry about fees.</th>
+              <td>A financially attractive plan could create fairness and trust concerns.</td>
+            </tr>
+            <tr>
+              <th scope="row">The company has limited cash if the launch fails.</th>
+              <td>Losses could reduce hiring, service quality, or future investment.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <form id="activity-form" novalidate>
+      <section class="panel" aria-labelledby="classify-heading">
+        <h2 id="classify-heading">Classify the Risk Signals</h2>
+        <div class="map-grid">
+          <div class="map-item">
+            <label for="late-payments">Late payments among new customers</label>
+            <select id="late-payments" name="late-payments" required>
+              <option value="">Select risk type</option>
+              <option value="credit">Credit risk</option>
+              <option value="market">Market risk</option>
+              <option value="reputation">Reputational risk</option>
+              <option value="liquidity">Liquidity risk</option>
+              <option value="operational">Operational risk</option>
+            </select>
+          </div>
+          <div class="map-item">
+            <label for="outages">Payment system outages</label>
+            <select id="outages" name="outages" required>
+              <option value="">Select risk type</option>
+              <option value="credit">Credit risk</option>
+              <option value="market">Market risk</option>
+              <option value="reputation">Reputational risk</option>
+              <option value="liquidity">Liquidity risk</option>
+              <option value="operational">Operational risk</option>
+            </select>
+          </div>
+          <div class="map-item">
+            <label for="fees">Customer concern about fees</label>
+            <select id="fees" name="fees" required>
+              <option value="">Select risk type</option>
+              <option value="credit">Credit risk</option>
+              <option value="market">Market risk</option>
+              <option value="reputation">Reputational risk</option>
+              <option value="liquidity">Liquidity risk</option>
+              <option value="operational">Operational risk</option>
+            </select>
+          </div>
+          <div class="map-item">
+            <label for="cash">Limited cash if the launch fails</label>
+            <select id="cash" name="cash" required>
+              <option value="">Select risk type</option>
+              <option value="credit">Credit risk</option>
+              <option value="market">Market risk</option>
+              <option value="reputation">Reputational risk</option>
+              <option value="liquidity">Liquidity risk</option>
+              <option value="operational">Operational risk</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="stakeholder-heading">
+        <h2 id="stakeholder-heading">Analyze Stakeholder Consequences</h2>
+        <fieldset>
+          <legend>Which stakeholders carry meaningful downside risk? Select all that apply.</legend>
+          <label class="choice"><input type="checkbox" name="stakeholder" value="customers"> Customers who may face fees, billing errors, or access loss.</label>
+          <label class="choice"><input type="checkbox" name="stakeholder" value="employees"> Employees whose staffing or workload may change if the launch fails.</label>
+          <label class="choice"><input type="checkbox" name="stakeholder" value="owners"> Owners or investors who may lose money if revenue does not arrive.</label>
+          <label class="choice"><input type="checkbox" name="stakeholder" value="none"> No stakeholders carry downside risk because subscriptions are optional.</label>
+        </fieldset>
+      </section>
+
+      <section class="panel" aria-labelledby="safeguard-heading">
+        <h2 id="safeguard-heading">Evaluate Safeguards</h2>
+        <fieldset>
+          <legend>Which launch safeguard best connects finance and responsibility?</legend>
+          <label class="choice"><input type="radio" name="safeguard" value="pilot" required> Run a small pilot, cap fees, test payment reliability, and monitor late-payment data before scaling.</label>
+          <label class="choice"><input type="radio" name="safeguard" value="full"> Launch everywhere immediately so the company can collect revenue as fast as possible.</label>
+          <label class="choice"><input type="radio" name="safeguard" value="fine-print"> Add detailed fee language to the terms and conditions, then launch broadly.</label>
+          <label class="choice"><input type="radio" name="safeguard" value="cancel"> Cancel the idea because any financial risk means the decision is irresponsible.</label>
+        </fieldset>
+      </section>
+
+      <div id="form-error" class="error" role="alert" tabindex="-1" hidden></div>
+      <div class="controls">
+        <button type="submit">Submit Risk Map</button>
+        <button type="button" class="secondary" id="reset-btn">Reset</button>
+      </div>
+    </form>
+
+    <section id="results" class="results" aria-live="polite" hidden>
+      <h2>Results and Feedback</h2>
+      <p class="score" id="score-line"></p>
+      <div id="feedback-list"></div>
+    </section>
+
+    <section id="takeaway" class="takeaway" hidden>
+      <h2>Take-Away Risk Map</h2>
+      <div id="takeaway-content"></div>
+      <div class="controls">
+        <button type="button" id="download-btn">Download Take-Away</button>
+        <button type="button" class="secondary" onclick="window.print()">Print Take-Away</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let scormAPI = null;
+    function findAPI(win) {
+      let attempts = 0;
+      while (win && attempts < 7) {
+        if (win.API) return win.API;
+        win = win.parent;
+        attempts += 1;
+      }
+      return null;
+    }
+    function scormInit() {
+      scormAPI = findAPI(window) || (window.opener ? findAPI(window.opener) : null);
+      if (scormAPI) {
+        scormAPI.LMSInitialize("");
+        scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        scormAPI.LMSCommit("");
+      }
+    }
+    function scormComplete(score) {
+      if (!scormAPI) return;
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(score));
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", "100");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+      scormAPI.LMSCommit("");
+    }
+    window.addEventListener("load", scormInit);
+    window.addEventListener("beforeunload", () => { if (scormAPI) scormAPI.LMSFinish(""); });
+
+    const form = document.getElementById("activity-form");
+    const errorBox = document.getElementById("form-error");
+    const results = document.getElementById("results");
+    const takeaway = document.getElementById("takeaway");
+    const scoreLine = document.getElementById("score-line");
+    const feedbackList = document.getElementById("feedback-list");
+    const takeawayContent = document.getElementById("takeaway-content");
+
+    const expected = {
+      "late-payments": "credit",
+      outages: "operational",
+      fees: "reputation",
+      cash: "liquidity"
+    };
+
+    function checkedStakeholders() {
+      return Array.from(form.querySelectorAll('input[name="stakeholder"]:checked')).map(input => input.value);
+    }
+
+    function selectedRadio(name) {
+      return form.querySelector(`input[name="${name}"]:checked`);
+    }
+
+    function requireComplete() {
+      const missing = [];
+      Object.keys(expected).forEach(name => {
+        if (!form.elements[name].value) missing.push(form.querySelector(`label[for="${name}"]`).textContent);
+      });
+      if (!checkedStakeholders().length) missing.push("stakeholder consequences");
+      if (!selectedRadio("safeguard")) missing.push("launch safeguard");
+      return missing;
+    }
+
+    function addFeedback(title, isCorrect, message) {
+      const div = document.createElement("div");
+      div.className = `feedback ${isCorrect ? "good" : ""}`;
+      div.innerHTML = `<h3>${title}</h3><p><strong>${isCorrect ? "Strong analysis." : "Review this analysis."}</strong> ${message}</p>`;
+      feedbackList.appendChild(div);
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const missing = requireComplete();
+      if (missing.length) {
+        errorBox.hidden = false;
+        errorBox.textContent = `Please complete: ${missing.join(", ")}.`;
+        errorBox.focus();
+        return;
+      }
+      errorBox.hidden = true;
+      feedbackList.innerHTML = "";
+
+      let classificationScore = 0;
+      Object.entries(expected).forEach(([name, value]) => {
+        if (form.elements[name].value === value) classificationScore += 10;
+      });
+      const stakeholders = checkedStakeholders();
+      const stakeholderCorrect = stakeholders.includes("customers") && stakeholders.includes("employees") && stakeholders.includes("owners") && !stakeholders.includes("none");
+      const safeguardCorrect = selectedRadio("safeguard").value === "pilot";
+      const score = classificationScore + (stakeholderCorrect ? 30 : 0) + (safeguardCorrect ? 30 : 0);
+
+      scoreLine.textContent = `Score reported to Canvas: ${score} out of 100`;
+      addFeedback("Risk Classification", classificationScore === 40, "Late payments are credit risk, outages are operational risk, fee concerns are reputational risk, and limited cash is liquidity risk.");
+      addFeedback("Stakeholder Analysis", stakeholderCorrect, "Customers, employees, and owners or investors all carry downside risk. Optional participation does not remove responsibility when pricing, access, work, and cash stability are affected.");
+      addFeedback("Safeguard Evaluation", safeguardCorrect, "A small pilot with fee caps, reliability testing, and late-payment monitoring tests assumptions before scale. That is stronger than either rushing launch or avoiding all risk.");
+
+      takeawayContent.innerHTML = `
+        <p><strong>Primary finance risk pattern:</strong> The plan combines credit, operational, reputational, and liquidity risk.</p>
+        <p><strong>Stakeholders affected:</strong> Customers may face fees or access problems; employees may experience changed workload or staffing; owners and investors may lose money if cash does not arrive.</p>
+        <p><strong>Recommended safeguard:</strong> Pilot the plan first, cap fees, test payment reliability, and use late-payment evidence before scaling.</p>
+      `;
+      results.hidden = false;
+      takeaway.hidden = false;
+      scormComplete(score);
+      results.scrollIntoView({ block: "start" });
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      form.reset();
+      errorBox.hidden = true;
+      results.hidden = true;
+      takeaway.hidden = true;
+      feedbackList.innerHTML = "";
+      scoreLine.textContent = "";
+    });
+
+    document.getElementById("download-btn").addEventListener("click", () => {
+      const text = takeawayContent.innerText;
+      const blob = new Blob([`Finance Risk and Stakeholder Map Take-Away\n\n${text}\n`], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "finance-risk-stakeholder-map-takeaway.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
