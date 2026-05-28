@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finance Investment Decision Lab</title>
+  <style>
+    :root {
+      --asu-maroon: #8c1d40;
+      --asu-gold: #ffc627;
+      --asu-black: #191919;
+      --asu-gray: #747474;
+      --asu-blue: #00a3e0;
+      --asu-green: #78be20;
+      --ink: #1f2933;
+      --muted: #52606d;
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --line: #d8dee6;
+      --focus: #005ea8;
+      --good-bg: #edf8e8;
+      --warn-bg: #fff8df;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -44px;
+      z-index: 10;
+      background: var(--asu-gold);
+      color: var(--asu-black);
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .skip-link:focus { top: 12px; outline: 3px solid white; }
+    header {
+      background: var(--asu-maroon);
+      color: white;
+      padding: 30px clamp(18px, 4vw, 56px);
+      border-bottom: 8px solid var(--asu-gold);
+    }
+    header p { max-width: 920px; margin: 8px 0 0; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; }
+    h2 { color: var(--asu-maroon); margin: 0 0 10px; line-height: 1.2; }
+    h3 { margin-bottom: 8px; color: var(--asu-black); }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px clamp(14px, 3vw, 32px) 48px;
+    }
+    .panel, .results, .takeaway {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 18px 0;
+    }
+    .scenario {
+      border-left: 7px solid var(--asu-blue);
+      background: #eef9fd;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+    .choice {
+      display: block;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 10px 0;
+      background: white;
+    }
+    .choice:has(input:checked) {
+      border-color: var(--asu-maroon);
+      box-shadow: 0 0 0 3px rgba(140, 29, 64, .16);
+    }
+    label, legend { font-weight: 700; }
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+    select, button, input[type="radio"] {
+      font: inherit;
+    }
+    select {
+      width: 100%;
+      max-width: 420px;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: white;
+      color: var(--ink);
+      margin-top: 6px;
+    }
+    button {
+      background: var(--asu-maroon);
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      padding: 11px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 6px 8px 6px 0;
+    }
+    button.secondary { background: #44515f; }
+    button:hover { filter: brightness(.95); }
+    button:focus, select:focus, input:focus {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--asu-maroon);
+      color: white;
+    }
+    caption {
+      text-align: left;
+      font-weight: 700;
+      color: var(--asu-maroon);
+      margin-bottom: 6px;
+    }
+    .feedback {
+      border-left: 7px solid var(--asu-gold);
+      background: var(--warn-bg);
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .score {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--asu-maroon);
+    }
+    .good {
+      background: var(--good-bg);
+      border-left-color: var(--asu-green);
+    }
+    .error {
+      border: 2px solid #b00020;
+      background: #fff3f3;
+      color: #3b0a0a;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (max-width: 680px) {
+      th, td { display: block; width: 100%; }
+      tr { border: 1px solid var(--line); display: block; margin-bottom: 12px; }
+      th { border-bottom: 0; }
+    }
+    @media print {
+      .skip-link, header, form, .controls { display: none; }
+      body { background: white; }
+      main { max-width: none; padding: 0; }
+      .panel, .results, .takeaway { border-color: #999; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header>
+    <h1>Finance Investment Decision Lab</h1>
+    <p>Analyze competing investments using present value, risk, return, and stakeholder responsibility. Then build a recommendation that a first-year business student could defend.</p>
+  </header>
+  <main id="main">
+    <section class="panel scenario" aria-labelledby="scenario-heading">
+      <h2 id="scenario-heading">Business Situation</h2>
+      <p>A growing company has <strong>$10,000</strong> available for one initiative this year. Leaders are comparing three options. The Finance lens asks which choice creates value over time, what assumptions must hold, and who carries the downside if the choice fails.</p>
+      <p>The company requires a <strong>10% return</strong>. The present value formula is shown in words: future benefit divided by one plus the required return.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="options-heading">
+      <h2 id="options-heading">Decision Evidence</h2>
+      <div role="region" aria-labelledby="options-table-caption" tabindex="0">
+        <table>
+          <caption id="options-table-caption">Investment options and one-year expected benefits</caption>
+          <thead>
+            <tr>
+              <th scope="col">Option</th>
+              <th scope="col">Cost Today</th>
+              <th scope="col">Expected Benefit in One Year</th>
+              <th scope="col">Main Risk</th>
+              <th scope="col">Stakeholder Concern</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">A. Service automation with transition support</th>
+              <td>$10,000</td>
+              <td>$12,000</td>
+              <td>Operational and reputation risk if the rollout hurts service quality.</td>
+              <td>Some employee tasks change, but the proposal includes retraining time.</td>
+            </tr>
+            <tr>
+              <th scope="row">B. Short-term demand campaign</th>
+              <td>$10,000</td>
+              <td>$11,500</td>
+              <td>Market risk if customer demand does not respond as expected.</td>
+              <td>Customers may see more promotion without a better service experience.</td>
+            </tr>
+            <tr>
+              <th scope="row">C. Hold cash for uncertainty</th>
+              <td>$10,000</td>
+              <td>$10,000</td>
+              <td>Opportunity risk if the company misses useful improvements.</td>
+              <td>Lower immediate disruption, but no new value is created for stakeholders.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <form id="activity-form" novalidate>
+      <section class="panel" aria-labelledby="analysis-heading">
+        <h2 id="analysis-heading">Analyze the Financial Case</h2>
+        <div class="grid">
+          <div>
+            <label for="best-pv">Which option has the strongest financial value before stakeholder adjustments?</label>
+            <select id="best-pv" name="best-pv" required>
+              <option value="">Select one</option>
+              <option value="a">A. Service automation with transition support</option>
+              <option value="b">B. Short-term demand campaign</option>
+              <option value="c">C. Hold cash for uncertainty</option>
+            </select>
+          </div>
+          <div>
+            <label for="assumption">Which assumption most needs to be tested before leaders commit?</label>
+            <select id="assumption" name="assumption" required>
+              <option value="">Select one</option>
+              <option value="cash">Whether the company can spend exactly $10,000.</option>
+              <option value="savings">Whether automation savings will appear without damaging service quality.</option>
+              <option value="colors">Whether customers prefer maroon or gold branding.</option>
+              <option value="parking">Whether employees have convenient parking.</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="evaluate-heading">
+        <h2 id="evaluate-heading">Evaluate Responsibility</h2>
+        <fieldset>
+          <legend>Which recommendation best balances value, risk, and responsibility?</legend>
+          <label class="choice"><input type="radio" name="recommendation" value="a-conditions" required> Choose A, but only with a phased rollout, employee retraining, and service-quality monitoring.</label>
+          <label class="choice"><input type="radio" name="recommendation" value="a-no-conditions"> Choose A because the highest present value should always decide the issue.</label>
+          <label class="choice"><input type="radio" name="recommendation" value="b"> Choose B because promotion is less controversial than changing jobs.</label>
+          <label class="choice"><input type="radio" name="recommendation" value="c"> Choose C because avoiding risk is always more responsible than investing.</label>
+        </fieldset>
+      </section>
+
+      <section class="panel" aria-labelledby="create-heading">
+        <h2 id="create-heading">Create the Decision Rule</h2>
+        <fieldset>
+          <legend>Choose the decision rule that would make your recommendation defensible.</legend>
+          <label class="choice"><input type="radio" name="rule" value="responsible" required> Fund a positive-value option only when its key assumption is tested and the people carrying the downside have a clear safeguard.</label>
+          <label class="choice"><input type="radio" name="rule" value="profit-only"> Fund any option with a positive present value because responsibility can be addressed later.</label>
+          <label class="choice"><input type="radio" name="rule" value="no-risk"> Fund only options with no uncertainty, even if that means never improving operations.</label>
+          <label class="choice"><input type="radio" name="rule" value="popular"> Fund the option that sounds easiest to explain in a marketing message.</label>
+        </fieldset>
+      </section>
+
+      <div id="form-error" class="error" role="alert" tabindex="-1" hidden></div>
+      <div class="controls">
+        <button type="submit">Submit Investment Analysis</button>
+        <button type="button" class="secondary" id="reset-btn">Reset</button>
+      </div>
+    </form>
+
+    <section id="results" class="results" aria-live="polite" hidden>
+      <h2>Results and Feedback</h2>
+      <p class="score" id="score-line"></p>
+      <div id="feedback-list"></div>
+    </section>
+
+    <section id="takeaway" class="takeaway" hidden>
+      <h2>Take-Away Recommendation</h2>
+      <div id="takeaway-content"></div>
+      <div class="controls">
+        <button type="button" id="download-btn">Download Take-Away</button>
+        <button type="button" class="secondary" onclick="window.print()">Print Take-Away</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let scormAPI = null;
+    function findAPI(win) {
+      let attempts = 0;
+      while (win && attempts < 7) {
+        if (win.API) return win.API;
+        win = win.parent;
+        attempts += 1;
+      }
+      return null;
+    }
+    function scormInit() {
+      scormAPI = findAPI(window) || (window.opener ? findAPI(window.opener) : null);
+      if (scormAPI) {
+        scormAPI.LMSInitialize("");
+        scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        scormAPI.LMSCommit("");
+      }
+    }
+    function scormComplete(score) {
+      if (!scormAPI) return;
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(score));
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", "100");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+      scormAPI.LMSCommit("");
+    }
+    window.addEventListener("load", scormInit);
+    window.addEventListener("beforeunload", () => { if (scormAPI) scormAPI.LMSFinish(""); });
+
+    const form = document.getElementById("activity-form");
+    const errorBox = document.getElementById("form-error");
+    const results = document.getElementById("results");
+    const takeaway = document.getElementById("takeaway");
+    const scoreLine = document.getElementById("score-line");
+    const feedbackList = document.getElementById("feedback-list");
+    const takeawayContent = document.getElementById("takeaway-content");
+
+    const feedback = {
+      pv: {
+        correct: "Option A has the strongest financial value before stakeholder adjustments. Its expected future benefit of $12,000 has a present value of about $10,909 at 10%, which is above the $10,000 cost.",
+        incorrect: "The strongest financial value is Option A before stakeholder adjustments. The present value of $12,000 one year from now at 10% is about $10,909."
+      },
+      assumption: {
+        correct: "The critical assumption is whether the projected savings can appear without damaging service quality. Finance uses the number, then tests the assumption behind the number.",
+        incorrect: "The assumption most worth testing is whether automation savings will happen without damaging service quality. That assumption connects value, risk, and reputation."
+      },
+      recommendation: {
+        correct: "A conditional recommendation is strongest because it preserves financial value while naming safeguards for employees and customers.",
+        incorrect: "The strongest recommendation is Option A with conditions. A high present value is not enough by itself; responsible finance also names safeguards for affected stakeholders."
+      },
+      rule: {
+        correct: "A defensible decision rule combines positive value, tested assumptions, and safeguards for the people who carry downside risk.",
+        incorrect: "The strongest decision rule funds a positive-value option only after testing the key assumption and protecting stakeholders who carry downside risk."
+      }
+    };
+
+    function selectedRadio(name) {
+      return form.querySelector(`input[name="${name}"]:checked`);
+    }
+
+    function requireComplete() {
+      const missing = [];
+      if (!form.elements["best-pv"].value) missing.push("strongest financial value");
+      if (!form.elements.assumption.value) missing.push("critical assumption");
+      if (!selectedRadio("recommendation")) missing.push("responsible recommendation");
+      if (!selectedRadio("rule")) missing.push("decision rule");
+      return missing;
+    }
+
+    function addFeedback(title, isCorrect, correctText, incorrectText) {
+      const div = document.createElement("div");
+      div.className = `feedback ${isCorrect ? "good" : ""}`;
+      div.innerHTML = `<h3>${title}</h3><p><strong>${isCorrect ? "Strong choice." : "Review this lens."}</strong> ${isCorrect ? correctText : incorrectText}</p>`;
+      feedbackList.appendChild(div);
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const missing = requireComplete();
+      if (missing.length) {
+        errorBox.hidden = false;
+        errorBox.textContent = `Please complete: ${missing.join(", ")}.`;
+        errorBox.focus();
+        return;
+      }
+      errorBox.hidden = true;
+      feedbackList.innerHTML = "";
+
+      const pvCorrect = form.elements["best-pv"].value === "a";
+      const assumptionCorrect = form.elements.assumption.value === "savings";
+      const recommendationCorrect = selectedRadio("recommendation").value === "a-conditions";
+      const ruleCorrect = selectedRadio("rule").value === "responsible";
+      const score = (pvCorrect ? 25 : 0) + (assumptionCorrect ? 25 : 0) + (recommendationCorrect ? 25 : 0) + (ruleCorrect ? 25 : 0);
+
+      scoreLine.textContent = `Score reported to Canvas: ${score} out of 100`;
+      addFeedback("Financial Value", pvCorrect, feedback.pv.correct, feedback.pv.incorrect);
+      addFeedback("Assumption Testing", assumptionCorrect, feedback.assumption.correct, feedback.assumption.incorrect);
+      addFeedback("Responsible Recommendation", recommendationCorrect, feedback.recommendation.correct, feedback.recommendation.incorrect);
+      addFeedback("Decision Rule", ruleCorrect, feedback.rule.correct, feedback.rule.incorrect);
+
+      takeawayContent.innerHTML = `
+        <p><strong>Recommended action:</strong> Choose the service automation investment only with a phased rollout, employee retraining, and service-quality monitoring.</p>
+        <p><strong>Finance evidence:</strong> The project has the strongest one-year present value among the options, but the value depends on the savings assumption holding true.</p>
+        <p><strong>Responsibility boundary:</strong> Financial value should not override stakeholder risk. The company should protect employees and customers who carry downside risk if the assumption is wrong.</p>
+      `;
+      results.hidden = false;
+      takeaway.hidden = false;
+      scormComplete(score);
+      results.scrollIntoView({ block: "start" });
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      form.reset();
+      errorBox.hidden = true;
+      results.hidden = true;
+      takeaway.hidden = true;
+      feedbackList.innerHTML = "";
+      scoreLine.textContent = "";
+    });
+
+    document.getElementById("download-btn").addEventListener("click", () => {
+      const text = takeawayContent.innerText;
+      const blob = new Blob([`Finance Investment Decision Lab Take-Away\n\n${text}\n`], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "finance-investment-decision-lab-takeaway.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
